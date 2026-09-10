@@ -48,7 +48,7 @@ def fit_normal_equation(X,y):
 X = df[['area', 'rooms', 'age', 'dist_km', 'floors']].values
 Y = df['rent'].values
 
-theta=fit_normal_equation(X,Y)
+theta=fit_normal_equation(X_train,Y_train)
 print(theta)
 
 
@@ -75,4 +75,29 @@ X_train, Y_train, X_test, Y_test = train_test_split_scratch(
 )
 theta,loss_list=fit_gradient_descent(X_train,Y_train,lr=0.005,n_iters=20000)
 plt.plot(loss_list)
+plt.show()
+
+lr=[0.001,0.005,0.01]
+losses_list=[]
+losses_list.append(fit_gradient_descent(X_train,Y_train,lr=0.001,n_iters=20000)[1])
+losses_list.append(fit_gradient_descent(X_train,Y_train,lr=0.005,n_iters=20000)[1])
+losses_list.append(fit_gradient_descent(X_train,Y_train,lr=0.01,n_iters=20000)[1])
+plt.plot(losses_list[0],label='lr=0.001')
+plt.plot(losses_list[1],label='lr=0.005')
+plt.plot(losses_list[2],label='lr=0.01')
+plt.yscale('log')
+plt.legend()
+plt.show()
+
+y_pred=design_matrix(X_test)@theta
+def rmse(y_true,y_pred):
+    return np.sqrt(1/y_pred.shape[0]*np.sum((y_true-y_pred)**2))
+def r2_score_scratch(y_true,y_pred):
+    den=np.sum((y_true-np.mean(y_true))**2)
+    num=np.sum((y_true-y_pred)**2)
+    return 1-num/den
+print('RMSE:',rmse(Y_test,y_pred))
+print('R2:',r2_score_scratch(Y_test,y_pred))
+plt.scatter(y_pred, Y_test-y_pred)
+plt.axhline(y=0)
 plt.show()
